@@ -35,6 +35,13 @@ export default function Component() {
           <div className="text-center">
             <p>This page is utilizing the "front-page" WordPress template.</p>
             <code>wp-templates/front-page.js</code>
+            <ul style={{listStyle: 'none'}}>
+              {data?.posts?.nodes?.map((post) => (
+                <li key={post.id}>
+                  <a href={`/${post.slug}`}>{post.title}</a>
+                </li>
+              ))}
+            </ul>
           </div>
         </Container>
       </Main>
@@ -56,6 +63,14 @@ Component.query = gql`
     headerMenuItems: menuItems(where: { location: $headerLocation }) {
       nodes {
         ...NavigationMenuItemFragment
+      }
+    }
+    posts {
+      nodes {
+        id
+        title
+        databaseId
+        slug
       }
     }
     footerMenuItems: menuItems(where: { location: $footerLocation }) {
