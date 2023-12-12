@@ -19,6 +19,22 @@ export default async function handler(req, res) {
 
       await res.revalidate(slug.replace(/\/$/, ''))
 
+      // Purge edge cache
+      const url = `https://cf-api.kinsta.services/edge/v1/${process.env.APP_HOSTNAME}/purge`;
+      const options = {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${process.env.KINSTA_API_KEY}`,
+        },
+      }
+
+      const edgeCacheRes = await fetch(url, options)
+      const edgeCacheData = await edgeCacheRes.json()
+
+      if (!edgeCacheData.success) {
+        throw new Error('Failed to purge edge cache')
+      }
+
       return res.status(200).send('Revalidated')
     } catch (error) {
       console.error(error)
